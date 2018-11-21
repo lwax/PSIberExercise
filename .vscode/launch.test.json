@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "PSIberExercise",
+                "projectName": "PSIberExercise",
+                "workingDirectory": "/Users/lwandile/Projects/PSIberExercise",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "PSIberExercise",
+                "projectName": "PSIberExercise",
+                "workingDirectory": "/Users/lwandile/Projects/PSIberExercise",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}
