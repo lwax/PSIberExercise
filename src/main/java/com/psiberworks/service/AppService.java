@@ -1,6 +1,7 @@
 package com.psiberworks.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.psiberworks.models.TaxRebateThreshold;
 import com.psiberworks.models.TaxTable;
@@ -38,108 +39,92 @@ public class AppService {
                 inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket1()) <= 0){
                     BigDecimal tax = inputPayload.getTaxableIncomeYearly().multiply(taxTable.getTaxBracket1TaxRatePerc());
                     outputPayload.setAnnualTax(tax);
-                    outputPayload.setMonthlyTax(tax.divide(new BigDecimal("12")));
-                }
+                    outputPayload.setMonthlyTax(tax.divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+        }
 
-                outputPayload.setNet(inputPayload.getTaxableIncomeMonthly().subtract(outputPayload.getMonthlyTax()));
+        else if( inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket1()) > 0 && 
+                 inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket2()) <= 0) {
+
+            populateAnnualAndMonthlyTax(outputPayload, inputPayload.getTaxableIncomeYearly(), 
+                                        taxTable.getTaxBracket1(), taxTable.getTaxBracket2(), 
+                                        taxTable.getTaxBracket2TaxRateAmount(), taxTable.getTaxBracket2TaxRatePerc());
+        }
+
+
+        else if (inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket2()) > 0
+                && inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket3()) <= 0) {
+
+            populateAnnualAndMonthlyTax(outputPayload, inputPayload.getTaxableIncomeYearly(), taxTable.getTaxBracket2(),
+                    taxTable.getTaxBracket3(), taxTable.getTaxBracket3TaxRateAmount(),
+                    taxTable.getTaxBracket3TaxRatePerc());
+        }
+
+        else if (inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket3()) > 0
+                && inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket4()) <= 0) {
+
+            populateAnnualAndMonthlyTax(outputPayload, inputPayload.getTaxableIncomeYearly(), taxTable.getTaxBracket3(),
+                    taxTable.getTaxBracket4(), taxTable.getTaxBracket4TaxRateAmount(),
+                    taxTable.getTaxBracket4TaxRatePerc());
+        }
+
+        else if (inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket4()) > 0
+                && inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket5()) <= 0) {
+
+            populateAnnualAndMonthlyTax(outputPayload, inputPayload.getTaxableIncomeYearly(), taxTable.getTaxBracket4(),
+                    taxTable.getTaxBracket5(), taxTable.getTaxBracket5TaxRateAmount(),
+                    taxTable.getTaxBracket5TaxRatePerc());
+        }
+
+        else if (inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket5()) > 0
+                && inputPayload.getTaxableIncomeYearly().compareTo(taxTable.getTaxBracket6()) <= 0) {
+
+            populateAnnualAndMonthlyTax(outputPayload, inputPayload.getTaxableIncomeYearly(), taxTable.getTaxBracket5(),
+                    taxTable.getTaxBracket6(), taxTable.getTaxBracket6TaxRateAmount(),
+                    taxTable.getTaxBracket6TaxRatePerc());
+        }
+
+
+        else{
+            outputPayload.setAnnualTax(new BigDecimal("0"));
+            outputPayload.setMonthlyTax(new BigDecimal("0"));
+        }
+
+        populateMedicalAidTaxCredits(outputPayload, inputPayload.getNumOfMedicalAidMembers(), taxTable.getMedicalAidCreditMainAmount(), taxTable.getMedicalAidCreditSecondaryAmount());
+        outputPayload.setTaxCredits(outputPayload.getMedicalAidTaxCredits().add(taxRebateThreshold.getRebate()));
+        outputPayload.setAnnualTaxAfterCredits(outputPayload.getAnnualTax().subtract(outputPayload.getTaxCredits()));
+        outputPayload.setMonthlyTaxAfterCredits(outputPayload.getAnnualTaxAfterCredits().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+        outputPayload.setNet(inputPayload.getTaxableIncomeMonthly().subtract(outputPayload.getMonthlyTaxAfterCredits()));
 
         return outputPayload;
     } 
-    
 
+    private void populateAnnualAndMonthlyTax(OutputPayload outputPayload, BigDecimal taxableIncomeYearly,
+                                                BigDecimal previousTaxBracket, BigDecimal taxBracket,
+                                                BigDecimal taxRateAmount, BigDecimal taxRatePercentage){
+                    
+        BigDecimal tax = (taxableIncomeYearly.subtract(previousTaxBracket)).multiply(taxRatePercentage);
+        tax = tax.add(taxRateAmount);
+        outputPayload.setAnnualTax(tax);
+        outputPayload.setMonthlyTax(tax.divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+    }
 
-    // private void setAnnualTaxAndMonthlyTax(OutputPayload outputPayload, BigDecimal previousTaxBracket,
-    //                         BigDecimal taxableIncomeYearly, BigDecimal taxBracket,  BigDecimal taxRateAmount, 
-    //                         BigDecimal taxRatePercentage){
-        
-    //     BigDecimal tax ;
-    //     if(taxableIncomeYearly.compareTo(previousTaxBracket) <= 0){
-    //       tax  = taxableIncomeYearly.multiply(taxRatePercentage);
-    //     }
-    //     outputPayload.setAnnualTax(tax);
-    //     outputPayload.setMonthlyTax(tax.divide(new BigDecimal("12")));
-    // }
+    private void populateMedicalAidTaxCredits(OutputPayload outputPayload,int numOfMembers, BigDecimal mainAmount, BigDecimal secondaryAmount){
 
-    //     if(inputPayload.getTaxableIncomeYearly() > taxThreshold && inputPayload.getTaxableIncomeYearly() <= 188000){
-    //         BigDecimal tax = inputPayload.getTaxableIncomeYearly() * 0.18;
-    //         outputPayload.setAnnualTax(tax);
-    //         outputPayload.setMonthlyTax(tax/12);
-    //     }
+        BigDecimal medicalAidTaxCredits = new BigDecimal("0");
+        if(numOfMembers > 0 && numOfMembers <=2){
+            BigDecimal tempCredits = new BigDecimal(numOfMembers).multiply(mainAmount);
+            medicalAidTaxCredits.add(tempCredits.multiply(new BigDecimal("12")));
+        }
+        else if(numOfMembers >2){
 
-    //     else if(inputPayload.getTaxableIncomeYearly() > 188000 && inputPayload.getTaxableIncomeYearly() <= 293600){
+            int remainingMembers = numOfMembers - 2;
+            BigDecimal mainMembersCredits = new BigDecimal(2).multiply(mainAmount);
+            BigDecimal remainingMembersCredits = new BigDecimal(remainingMembers).multiply(secondaryAmount);
+            BigDecimal tempCredits = remainingMembersCredits.add(mainMembersCredits);
+            medicalAidTaxCredits.add(tempCredits.multiply(new BigDecimal("12")));
+        }
 
-    //         BigDecimal taxableIncome = (inputPayload.getTaxableIncomeYearly() - 188000) *  0.26;
-    //         BigDecimal tax = 33840 + taxableIncome;
-    //         outputPayload.setAnnualTax(tax);
-    //         outputPayload.setMonthlyTax(tax/12);
-    //     }
-
-    //     else if(inputPayload.getTaxableIncomeYearly() > 293600 && inputPayload.getTaxableIncomeYearly() <= 406400){
-
-    //         BigDecimal taxableIncome = (inputPayload.getTaxableIncomeYearly() - 293600) * 0.31;
-    //         BigDecimal tax = (61296 + taxableIncome) - 20907;
-    //         outputPayload.setAnnualTax(tax);
-    //         outputPayload.setMonthlyTax(tax/12);
-    //     }
-
-    //     else if(inputPayload.getTaxableIncomeYearly() > 406400 && inputPayload.getTaxableIncomeYearly() <= 550100){
-
-    //         BigDecimal taxableIncome = (inputPayload.getTaxableIncomeYearly() - 406400) *  0.36;
-    //         BigDecimal tax = 96264 + taxableIncome;
-    //         outputPayload.setAnnualTax(tax);
-    //         outputPayload.setMonthlyTax(tax/12);
-    //     }
-
-    //     else if(inputPayload.getTaxableIncomeYearly() > 550100 && inputPayload.getTaxableIncomeYearly() <= 701300){
-
-    //         BigDecimal taxableIncome = (inputPayload.getTaxableIncomeYearly() - 550100) *  0.39;
-    //         BigDecimal tax = 147996 + taxableIncome;
-    //         outputPayload.setAnnualTax(tax);
-    //         outputPayload.setMonthlyTax(tax/12);
-    //     }
-
-
-    //     else if(inputPayload.getTaxableIncomeYearly() > 701300){
-
-    //         BigDecimal taxableIncome = (inputPayload.getTaxableIncomeYearly() - 701300) *  0.41;
-    //         BigDecimal tax = 206294 + taxableIncome;
-    //         outputPayload.setAnnualTax(tax);
-    //         outputPayload.setMonthlyTax(tax/12);
-    //     }
-
-    //     else{
-    //         outputPayload.setAnnualTax(0);
-    //         outputPayload.setMonthlyTax(0);
-    //     }
-
-    //     if(inputPayload.getNumOfMedicalAidMembers() > 0 && inputPayload.getNumOfMedicalAidMembers() <= 2){
-
-    //         BigDecimal primaryDependents = 286 * 12;
-    //         BigDecimal secondaryDependants = (286 * 2)* 12;
-    //         if(inputPayload.getNumOfMedicalAidMembers() == 1){
-    //             outputPayload.setMedicalAidTaxCredits(primaryDependents);
-    //         }
-    //         else{
-    //             outputPayload.setMedicalAidTaxCredits(secondaryDependants);
-    //         }
-    //     }
-    //     else if (inputPayload.getNumOfMedicalAidMembers() > 2){
-    //         BigDecimal primaryDependents= (286 * 2) * 12;
-    //         BigDecimal secondaryDependants = ((inputPayload.getNumOfMedicalAidMembers() - 2) * 192) * 12;
-    //         outputPayload.setMedicalAidTaxCredits(primaryDependents + secondaryDependants);
-
-    //     }
-    //     else{
-    //         outputPayload.setMedicalAidTaxCredits(0);
-    //     }
-
-    //     outputPayload.setTaxCredits(outputPayload.getMedicalAidTaxCredits() + taxRebate);
-    //     outputPayload.setAnnualTaxAfterCredits(outputPayload.getAnnualTax() - outputPayload.getTaxCredits());
-    //     outputPayload.setMonthlyTaxAfterCredits(outputPayload.getAnnualTaxAfterCredits()/12);
-    //     outputPayload.setNet(inputPayload.getTaxableIncomeMonthly() - outputPayload.getMonthlyTaxAfterCredits());
-
-    //     return outputPayload;
-
-    // }
+        outputPayload.setMedicalAidTaxCredits(medicalAidTaxCredits);
+    }
 
 }

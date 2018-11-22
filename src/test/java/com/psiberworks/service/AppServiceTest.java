@@ -36,8 +36,30 @@ public class AppServiceTest {
         MockitoAnnotations.initMocks(this);
     }
     
+
     @Test
-    public void shouldPassWhenInputIsCorrect(){
+    public void shouldReturnSuccess_whenAgeGroupPrimaryAndYear2017() {
+
+        InputPayload inputPayload = new InputPayload();
+        inputPayload.setAgeGroup("primary");
+        inputPayload.setMonthOrYear("Monthly");
+        inputPayload.setTaxableIncomeMonthly(new BigDecimal("30000.00"));
+        // inputPayload.setNumOfMedicalAidMembers(1);
+        inputPayload.setTaxYear("2017");
+
+        when(taxTableRepositoryMock.findByTaxYear("2017")).thenReturn(getTaxTable("2017", 1L));
+        when(taxRebateThresholdRepositoryMock.findByAgeGroupAndYear("primary", "2017")).thenReturn(
+                getTaxRebateThreshold("2017", "primary", 1L, new BigDecimal("13500.00"), new BigDecimal("75000.00")));
+
+        // Mockito.when(appService)
+        OutputPayload outputPayload = appService.calculateTax(inputPayload);
+
+        assertEquals(outputPayload.getNet().stripTrailingZeros(), new BigDecimal("24301.67").stripTrailingZeros());
+
+    }
+
+    @Test
+    public void shouldReturnSuccess_whenAgeGroupSecondaryAndYear2017(){
         
 
         InputPayload inputPayload = new InputPayload();
@@ -50,15 +72,41 @@ public class AppServiceTest {
         when(taxTableRepositoryMock.findByTaxYear("2017"))
             .thenReturn(getTaxTable("2017", 1L));
         when(taxRebateThresholdRepositoryMock.findByAgeGroupAndYear("secondary", "2017"))
-            .thenReturn(getTaxRebateThreshold("2017", "secondary", 1L));
+            .thenReturn(getTaxRebateThreshold("2017", "secondary", 1L, new BigDecimal("7407.00"),
+                        new BigDecimal("116150.00")));
 
         //Mockito.when(appService)
        OutputPayload outputPayload = appService.calculateTax(inputPayload);
 
 
-       assertEquals(outputPayload.getNet(), new BigDecimal("17646.86"));
+       assertEquals(outputPayload.getNet().stripTrailingZeros(), new BigDecimal("23793.92").stripTrailingZeros());
 
     }
+
+
+    @Test
+    public void shouldReturnSuccess_whenAgeGroupTertiaryAndYear2017() {
+
+        InputPayload inputPayload = new InputPayload();
+        inputPayload.setAgeGroup("tertiary");
+        inputPayload.setMonthOrYear("Monthly");
+        inputPayload.setTaxableIncomeMonthly(new BigDecimal("30000.00"));
+        // inputPayload.setNumOfMedicalAidMembers(1);
+        inputPayload.setTaxYear("2017");
+
+        when(taxTableRepositoryMock.findByTaxYear("2017")).thenReturn(getTaxTable("2017", 1L));
+        when(taxRebateThresholdRepositoryMock.findByAgeGroupAndYear("tertiary", "2017"))
+                .thenReturn(getTaxRebateThreshold("2017", "tertiary", 1L, new BigDecimal("2466.00"), 
+                        new BigDecimal("129850.00")));
+
+        // Mockito.when(appService)
+        OutputPayload outputPayload = appService.calculateTax(inputPayload);
+
+        assertEquals(outputPayload.getNet().stripTrailingZeros(), new BigDecimal("23382.17").stripTrailingZeros());
+
+    }
+
+
 
     private TaxTable getTaxTable(String year, long id) {
         TaxTable taxTable = new TaxTable();
@@ -102,14 +150,15 @@ public class AppServiceTest {
         return taxTable;
     }
 
-    public TaxRebateThreshold getTaxRebateThreshold(String year, String ageGroup, long id) {
+    public TaxRebateThreshold getTaxRebateThreshold(String year, String ageGroup, long id, BigDecimal rebate, 
+            BigDecimal threshold) {
         TaxRebateThreshold taxRebateThreshold = new TaxRebateThreshold();
 
         taxRebateThreshold.setId(id);
         taxRebateThreshold.setAgeGroup(ageGroup);
         taxRebateThreshold.setYear(year);
-        taxRebateThreshold.setRebate(new BigDecimal("7407.00"));
-        taxRebateThreshold.setThreshold(new BigDecimal("116150.00"));
+        taxRebateThreshold.setRebate(rebate);
+        taxRebateThreshold.setThreshold(threshold);
         return taxRebateThreshold;
 
     }
