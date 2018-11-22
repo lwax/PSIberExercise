@@ -10,7 +10,10 @@ import com.psiberworks.repository.TaxRebateThresholdRepository;
 import com.psiberworks.repository.TaxTableRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+@Component
 public class AppService {
 
     @Autowired
@@ -30,9 +33,17 @@ public class AppService {
                 .findByAgeGroupAndYear(inputPayload.getAgeGroup(), inputPayload.getTaxYear());
 
 
-        if(inputPayload.isMonthOrYear().equals("Monthly")){
-            BigDecimal yearlyIncome =  inputPayload.getTaxableIncomeMonthly().multiply(new BigDecimal("12"));
+        if(inputPayload.getIsMonthOrYear().equals("Monthly")){
+            BigDecimal yearlyIncome =  inputPayload.getTaxableIncome().multiply(new BigDecimal("12"));
+
+            inputPayload.setTaxableIncomeMonthly(inputPayload.getTaxableIncome());
             inputPayload.setTaxableIncomeYearly(yearlyIncome);
+        }
+        else{
+            BigDecimal monthlyIncome = inputPayload.getTaxableIncome().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP);
+
+            inputPayload.setTaxableIncomeMonthly(monthlyIncome);
+            inputPayload.setTaxableIncomeYearly(inputPayload.getTaxableIncome());
         }
 
         if( inputPayload.getTaxableIncomeYearly().compareTo(taxRebateThreshold.getThreshold()) > 0 &&

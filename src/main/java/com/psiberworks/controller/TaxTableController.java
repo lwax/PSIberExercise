@@ -1,5 +1,7 @@
 package com.psiberworks.controller;
 
+import java.util.List;
+
 import com.psiberworks.exceptionHandlers.TaxTableIdMismatchException;
 import com.psiberworks.exceptionHandlers.TaxTableNotFoundException;
 import com.psiberworks.models.TaxTable;
@@ -25,7 +27,7 @@ public class TaxTableController {
     private TaxTableRepository taxTableRepository;
 
     @GetMapping
-    public Iterable findAll() {
+    public List<TaxTable> findAll() {
         return taxTableRepository.findAll();
     }
 

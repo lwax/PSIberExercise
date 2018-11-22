@@ -17,23 +17,81 @@
 
 		<div class="starter-template">
 			<h1>SARS Income Tax Calculator</h1>
-			<h2>
-				<span th:text="'Message: ' + ${message}"></span>
-			</h2>
 		</div>
 
 
-		<div class="starter-template">
-			<h2>
-				Which tax year would you like to calculate
-			</h2>
-			<select >
-				<option th:value="2018" th:text="2018"></option>
-				<option th:value="2017" th:text="2017"></option>
-			</select>
+		<form action="#" th:action='@{/calculateTax}' th:object="${inputPayload}" method="post">
+		
+		
+			<div style="max-width:630px;overflow:hidden;">
+				<div class="income-header">
+					<b>Income</b>
+				</div>
+				<div class="calc-box grey">
+					<div class="row">
+						Which tax year would you like to calculate? 
+						<select th:field="*{taxYear}">
+							<option th:value="2018">2018</option>
+							<option th:value="2017">2017</option>
+						</select>
+					</div>
+					<div class="row">
+						What is your total salary before deductions?  
+						<input type="text" th:field="*{taxableIncome}"/>
+					</div>
+					<div class="row">
+						How often do you receive this salary?  
+						<select th:field="*{isMonthOrYear}">
+							<option th:value="Monthly">Monthly</option>
+							<option th:value="Yearly">Yearly</option>
+						</select>
+					</div>
+					<div class="row">
+						How many members on your medical aid?
+						<input type="text" th:field="*{numOfMedicalAidMembers}"/>
+					</div>
+					<div class="row">
+						Your Age:?
+						<select th:field="*{ageGroup}">
+							<option th:value="primary">Under 65</option>
+							<option th:value="secondary">65 - 75</option>
+							<option th:value="tertiary">Over 75</option>
+						</select>
+					</div>
+
+					<div class="row">
+						<input type="submit" value="Calculate?"/>
+					</div>
+				</div>		
+			</div>
+
+		</form>
+			
+		<div th:if="${outputPayload != null}" style=" max-width:630px;overflow:hidden;">
+			<div class="income-header">
+				<b>Your Tax Calculations</b>
+			</div>
+			<div class="calc-box grey">
+				<div class="row">
+					<b>Calculated PAYE – before tax credit</b>
+					Monthly: <span th:text="${outputPayload.getMonthlyTax()}" ></span><br/>
+					Annually: <span th:text="${outputPayload.getAnnualTax()}" ></span>
+				</div>
+				<div class="row">
+					<b>Tax Credits:</b>
+						<span th:text="${outputPayload.getTaxCredits()}" ></span>
+				</div>
+				<div class="row">
+					<b>PAYE Due – After Tax Credit:</b>
+						<span th:text="${outputPayload.getAnnualTaxAfterCredits()}" ></span>
+				</div>
+				<div class="row">
+					<b>Net Cash Pay after PAYE Due</b>
+						<span th:text="${outputPayload.getNet()}" ></span>
+				</div>
+			</div>		
 		</div>
 	</div>
-	<!-- /.container -->
 
 	<script type="text/javascript"
 		src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>

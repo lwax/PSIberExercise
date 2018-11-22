@@ -8,11 +8,12 @@ public class InputPayload {
     private String ageGroup;
     private BigDecimal taxableIncomeYearly;
     private BigDecimal taxableIncomeMonthly;
+    private BigDecimal taxableIncome;
     private int numOfMedicalAidMembers;
     private String isMonthOrYear;
 
-    public String isMonthOrYear() {
-        return this.isMonthOrYear;
+    public String getIsMonthOrYear() {
+        return isMonthOrYear;
     }
 
     public void setMonthOrYear(String isMonthOrYear) {
@@ -49,6 +50,14 @@ public class InputPayload {
 
     public void setTaxableIncomeMonthly(BigDecimal taxableIncomeMonthly) {
         this.taxableIncomeMonthly = taxableIncomeMonthly;
+    }
+
+    public BigDecimal getTaxableIncome() {
+        return this.taxableIncome;
+    }
+
+    public void setTaxableIncome(BigDecimal taxableIncome) {
+        this.taxableIncome = taxableIncome;
     }
 
     public int getNumOfMedicalAidMembers() {

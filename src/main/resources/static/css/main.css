@@ -5,3 +5,20 @@ h1{
 h2{
 	color:#FF0000;
 }
+.income-header {
+	background-color: #484848;
+	color: white;
+	padding: 0.5em 1em 0.5em 1em;
+}
+
+.calc-box {
+	padding: 1em 1em 0.5em 1em;
+	text-align: right;
+	margin-bottom: 1em;
+}
+.calc-box .row {
+	padding-bottom: 0.5em;
+}
+.grey {
+	background-color: #ececec;
+}
