@@ -42,7 +42,7 @@ public class AppServiceTest {
 
         InputPayload inputPayload = new InputPayload();
         inputPayload.setAgeGroup("primary");
-        inputPayload.setMonthOrYear("Monthly");
+        inputPayload.setIsMonthOrYear("Monthly");
         inputPayload.setTaxableIncome(new BigDecimal("30000.00"));
         // inputPayload.setNumOfMedicalAidMembers(1);
         inputPayload.setTaxYear("2017");
@@ -64,7 +64,7 @@ public class AppServiceTest {
 
         InputPayload inputPayload = new InputPayload();
         inputPayload.setAgeGroup("secondary");
-        inputPayload.setMonthOrYear("Monthly");
+        inputPayload.setIsMonthOrYear("Monthly");
         inputPayload.setTaxableIncome(new BigDecimal("30000.00"));
         //inputPayload.setNumOfMedicalAidMembers(1);
         inputPayload.setTaxYear("2017");
@@ -89,7 +89,7 @@ public class AppServiceTest {
 
         InputPayload inputPayload = new InputPayload();
         inputPayload.setAgeGroup("tertiary");
-        inputPayload.setMonthOrYear("Monthly");
+        inputPayload.setIsMonthOrYear("Monthly");
         inputPayload.setTaxableIncome(new BigDecimal("30000.00"));
         // inputPayload.setNumOfMedicalAidMembers(1);
         inputPayload.setTaxYear("2017");

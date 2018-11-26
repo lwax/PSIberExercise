@@ -16,7 +16,7 @@ public class InputPayload {
         return isMonthOrYear;
     }
 
-    public void setMonthOrYear(String isMonthOrYear) {
+    public void setIsMonthOrYear(String isMonthOrYear) {
         this.isMonthOrYear = isMonthOrYear;
     }
 

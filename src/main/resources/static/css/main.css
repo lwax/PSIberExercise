@@ -1,10 +1,18 @@
 h1{
-	color:#0000FF;
+	color:rgb(41, 52, 118);
 }
 
 h2{
-	color:#FF0000;
+	color: #1abc9c;
 }
+
+.container-box {
+	margin: 0 auto;
+	max-width:630px;
+	overflow:hidden;
+	border-radius: 3px;
+}
+
 .income-header {
 	background-color: #484848;
 	color: white;
@@ -13,11 +21,23 @@ h2{
 
 .calc-box {
 	padding: 1em 1em 0.5em 1em;
-	text-align: right;
+	text-align: left;
 	margin-bottom: 1em;
 }
+
 .calc-box .row {
 	padding-bottom: 0.5em;
+	padding-left: 0.5em;
+}
+
+.result-box {
+	padding: 1em 1em 1em 1em;
+	text-align: left;
+	margin-bottom: 1em;
+}
+.result-box .row {
+	padding-bottom: 0.5em;
+	padding-left: 0.5em;
 }
 .grey {
 	background-color: #ececec;

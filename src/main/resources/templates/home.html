@@ -15,15 +15,15 @@
 <body>
 	<div class="container">
 
-		<div class="starter-template">
-			<h1>SARS Income Tax Calculator</h1>
+		<div class="container-box">
+			<h1>PSIBER Income Tax Calculator</h1>
 		</div>
 
 
-		<form action="#" th:action='@{/calculateTax}' th:object="${inputPayload}" method="post">
+		<form action="#" th:action='@{/calculate}' th:object="${inputPayload}" method="post">
 		
 		
-			<div style="max-width:630px;overflow:hidden;">
+			<div class="container-box">
 				<div class="income-header">
 					<b>Income</b>
 				</div>
@@ -65,32 +65,35 @@
 				</div>		
 			</div>
 
-		</form>
+			<!-- Results block -->
 			
-		<div th:if="${outputPayload != null}" style=" max-width:630px;overflow:hidden;">
-			<div class="income-header">
-				<b>Your Tax Calculations</b>
+
+		</form>
+
+			<div th:if="${outputPayload.net != null}" class="container-box">
+				<div class="income-header">
+					<b>Your Tax Calculations</b>
+				</div>
+				<div class="result-box grey">
+					<div class="row">
+						<b>Calculated PAYE – before tax credit</b><br/>
+						Monthly: <span th:text="${outputPayload.monthlyTax}" ></span><br/>
+						Annually: <span th:text="${outputPayload.annualTax}" ></span>
+					</div>
+					<div class="row">
+						<b>Tax Credits:</b>
+							<span th:text="${outputPayload.taxCredits}" ></span>
+					</div>
+					<div class="row">
+						<b>PAYE Due – After Tax Credit:</b>
+							<span th:text="${outputPayload.annualTaxAfterCredits}" ></span>
+					</div>
+					<div class="row">
+						<b>Net Cash Pay after PAYE Due</b>
+							<span th:text="${outputPayload.net}" ></span>
+					</div>
+				</div>		
 			</div>
-			<div class="calc-box grey">
-				<div class="row">
-					<b>Calculated PAYE – before tax credit</b>
-					Monthly: <span th:text="${outputPayload.getMonthlyTax()}" ></span><br/>
-					Annually: <span th:text="${outputPayload.getAnnualTax()}" ></span>
-				</div>
-				<div class="row">
-					<b>Tax Credits:</b>
-						<span th:text="${outputPayload.getTaxCredits()}" ></span>
-				</div>
-				<div class="row">
-					<b>PAYE Due – After Tax Credit:</b>
-						<span th:text="${outputPayload.getAnnualTaxAfterCredits()}" ></span>
-				</div>
-				<div class="row">
-					<b>Net Cash Pay after PAYE Due</b>
-						<span th:text="${outputPayload.getNet()}" ></span>
-				</div>
-			</div>		
-		</div>
 	</div>
 
 	<script type="text/javascript"

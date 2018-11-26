@@ -55,7 +55,7 @@ public class TaxTableController {
     }
 
     @PutMapping("/{id}")
-    public TaxTable updateBook(@RequestBody TaxTable taxTable, @PathVariable Long id) {
+    public TaxTable updateTaxTable(@RequestBody TaxTable taxTable, @PathVariable Long id) {
         if (taxTable.getId() != id) {
             throw new TaxTableIdMismatchException();
         }
